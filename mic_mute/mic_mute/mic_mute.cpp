@@ -172,12 +172,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		CloseHandle(SingleControl);
 		return 0;
 	}
-
+/*
 	while (WSAStartup(MAKEWORD(2, 0), NULL) == WSASYSNOTREADY)
 	{
 		Sleep(100);
 	}
-
+*/
 	ZeroMemory(& win_ver, sizeof(win_ver));
 	win_ver.dwOSVersionInfoSize = sizeof(win_ver);
 	GetVersionEx(& win_ver);
@@ -617,7 +617,7 @@ VOID ReadIni(VOID)
 	GetPrivateProfileString(_T("Mic_Mute"), _T("SavedVolume"), _T("0"), _str, 1024, szPath);
 	_stscanf(_str, _T("%i"), &SavedVolume);
 	GetPrivateProfileString(_T("Mic_Mute"), _T("CheckUpdates"), _T("1"), _str, 1024, szPath);
-	_stscanf(_str, _T("%i"), &CheckUpdates);
+	//_stscanf(_str, _T("%i"), &CheckUpdates);
 
 	GetPrivateProfileString(_T("Mic_Mute"), _T("MicOnSound"), szMicOnDefaultSound, szMicOnSound, MAX_PATH, szPath);
 	GetPrivateProfileString(_T("Mic_Mute"), _T("MicOffSound"), szMicOffDefaultSound, szMicOffSound, MAX_PATH, szPath);
@@ -776,7 +776,7 @@ VOID MuteToggle(HWND hWnd)
 			size_t _len = 0;
 			StringCchLength(szMicOnSound, sizeof(szMicOnSound) / sizeof(szMicOnSound[0]), & _len);
 			TCHAR _open_str[1024];
-			_open_str[0] = _T('');
+			_open_str[0] = 0;
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, _T("open \""));
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, szMicOffSound);
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, _T("\" type mpegvideo alias MicOffSound"));
@@ -803,7 +803,7 @@ VOID MuteToggle(HWND hWnd)
 			size_t _len = 0;
 			StringCchLength(szMicOnSound, sizeof(szMicOnSound) / sizeof(szMicOnSound[0]), & _len);
 			TCHAR _open_str[1024];
-			_open_str[0] = _T('');
+			_open_str[0] = 0;
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, _T("open \""));
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, szMicOnSound);
 			StringCchCat(_open_str, sizeof(_open_str) / sizeof(_open_str[0]) - 1, _T("\" type mpegvideo alias MicOnSound"));
