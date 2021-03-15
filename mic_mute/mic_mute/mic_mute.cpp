@@ -86,6 +86,9 @@ UINT SelectedDevice = 0;
 HANDLE SingleControl = NULL;
 int MicMode = MIC_MODE_STANDART;
 bool IsMuted = false;
+bool bUseRegistyAutostart = true; //use the registry instead of schtasks
+bool bUseNetwork = false; //dont initiallize the network access
+bool bNoUpdates = true; //globally dont check for updates - especially if networkaccess is off
 
 bool restart_with_admin_rights = false;
 
@@ -172,12 +175,15 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		CloseHandle(SingleControl);
 		return 0;
 	}
-/*
-	while (WSAStartup(MAKEWORD(2, 0), NULL) == WSASYSNOTREADY)
+
+	if (bUseNetwork)
 	{
-		Sleep(100);
+		while (WSAStartup(MAKEWORD(2, 0), NULL) == WSASYSNOTREADY)
+		{
+			Sleep(100);
+		}
 	}
-*/
+
 	ZeroMemory(& win_ver, sizeof(win_ver));
 	win_ver.dwOSVersionInfoSize = sizeof(win_ver);
 	GetVersionEx(& win_ver);
@@ -617,7 +623,7 @@ VOID ReadIni(VOID)
 	GetPrivateProfileString(_T("Mic_Mute"), _T("SavedVolume"), _T("0"), _str, 1024, szPath);
 	_stscanf(_str, _T("%i"), &SavedVolume);
 	GetPrivateProfileString(_T("Mic_Mute"), _T("CheckUpdates"), _T("1"), _str, 1024, szPath);
-	//_stscanf(_str, _T("%i"), &CheckUpdates);
+	if (!bNoUpdates) _stscanf(_str, _T("%i"), &CheckUpdates);
 
 	GetPrivateProfileString(_T("Mic_Mute"), _T("MicOnSound"), szMicOnDefaultSound, szMicOnSound, MAX_PATH, szPath);
 	GetPrivateProfileString(_T("Mic_Mute"), _T("MicOffSound"), szMicOffDefaultSound, szMicOffSound, MAX_PATH, szPath);
@@ -919,7 +925,7 @@ VOID AutorunToggle(HWND hWnd)
 		{
 			_cmd[--_len] = _T('\0');
 		}
-		if (win_ver.dwMajorVersion < 6)
+		if (bUseRegistyAutostart || win_ver.dwMajorVersion < 6)
 		{
 			RegSetValueEx(hKey, _T("MicMute"), 0, REG_SZ, (BYTE *)_cmd, (DWORD)(_len * sizeof(_cmd[0]) + sizeof(_T('\0'))));
 		}
@@ -950,7 +956,7 @@ VOID AutorunToggle(HWND hWnd)
 		_arun_state = MF_UNCHECKED;
 		SoundSignal = FALSE;
 
-		if (win_ver.dwMajorVersion >= 6)
+		if (bUseRegistyAutostart || win_ver.dwMajorVersion >= 6)
 		{
 			StringCchCopy(str, sizeof(str) / sizeof(str[0]) - 1, _T("/delete /tn MicMute /f"));
 			ShellExecute(NULL, _T("open"), _T("schtasks"), str, NULL, SW_HIDE);
