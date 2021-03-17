@@ -765,11 +765,21 @@ VOID MuteToggle(HWND hWnd)
 	flash.uCount = 0xffffffff;
 
 	mute_state = CheckMenuItem(menu, IDM_MUTE, MF_UNCHECKED);
+	MIXERCAPS _caps;
+	TCHAR _device_text[1024];
+	_device_text[0] = 0;
+	if SUCCEEDED(CMixer::GetCaps(SelectedDevice, &_caps))
+	{
+		StringCchCopy(_device_text, sizeof(_device_text) / sizeof(_device_text[0]) - 1, _T("   "));
+		StringCchCat(_device_text, sizeof(_device_text) / sizeof(_device_text[0]) - 1, _caps.szPname);
+	}
+
 	if (mute_state == MF_UNCHECKED)
 	{
 		TCHAR _tooltip_text[1024];
 		LoadString(hInst, IDS_MICOFF, _tooltip_text, sizeof(_tooltip_text) / sizeof(_tooltip_text[0]));
 		StringCchCopy(nid.szInfo, sizeof(nid.szInfo) / sizeof(nid.szInfo[0]) - 1, _tooltip_text);
+		StringCchCat(nid.szInfo, sizeof(nid.szInfo) / sizeof(nid.szInfo[0]) - 1, _device_text);
 		TCHAR _tip[1024];
 		LoadString(hInst, IDS_MICOFF2, _tip, sizeof(_tip) / sizeof(_tip[0]));
 		StringCchCopy(nid.szTip, sizeof(nid.szTip) / sizeof(nid.szTip[0]) - 1, _tip);
@@ -797,6 +807,7 @@ VOID MuteToggle(HWND hWnd)
 		TCHAR _tooltip_text[1024];
 		LoadString(hInst, IDS_MICON, _tooltip_text, sizeof(_tooltip_text) / sizeof(_tooltip_text[0]));
 		StringCchCopy(nid.szInfo, sizeof(nid.szInfo) / sizeof(nid.szInfo[0]) - 1, _tooltip_text);
+		StringCchCat(nid.szInfo, sizeof(nid.szInfo) / sizeof(nid.szInfo[0]) - 1, _device_text);
 		TCHAR _tip[1024];
 		LoadString(hInst, IDS_MICON2, _tip, sizeof(_tip) / sizeof(_tip[0]));
 		StringCchCopy(nid.szTip, sizeof(nid.szTip) / sizeof(nid.szTip[0]) - 1, _tip);
